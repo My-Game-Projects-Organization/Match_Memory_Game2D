@@ -15,6 +15,7 @@ public class MatchItemUI : MonoBehaviour
     private Animator m_anim;
 
     public int Id { get => m_id; set => m_id = value; }
+    public bool IsOpened { get => m_isOpened; set => m_isOpened = value; }
 
     private void Awake()
     {
@@ -36,13 +37,13 @@ public class MatchItemUI : MonoBehaviour
     
     public void ChangeState()
     {
-        m_isOpened = !m_isOpened;
+        IsOpened = !IsOpened;
 
         if(itemBG)
-            itemBG.sprite = m_isOpened ? bg : backBG;
+            itemBG.sprite = IsOpened ? bg : backBG;
         if (itemIcon)
         {
-            itemIcon.gameObject.SetActive(m_isOpened);
+            itemIcon.gameObject.SetActive(IsOpened);
         }
     }
 
@@ -68,6 +69,6 @@ public class MatchItemUI : MonoBehaviour
             m_anim.SetBool(AnimState.Flip.ToString(), false);
         }
         if(btnComp)
-            btnComp.enabled = !m_isOpened;
+            btnComp.enabled = !IsOpened;
     }
 }

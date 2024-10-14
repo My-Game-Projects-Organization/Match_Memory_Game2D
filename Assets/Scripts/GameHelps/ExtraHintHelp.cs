@@ -1,10 +1,9 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class HintHelp : MonoBehaviour ,IGameHelp
+public class ExtraHintHelp : MonoBehaviour, IGameHelp
 {
     private int remainingHints = 3;
 
@@ -17,18 +16,17 @@ public class HintHelp : MonoBehaviour ,IGameHelp
     {
         List<MatchItemUI> list_item = GameManager.Ins.m_matchItemUIs.Where(item => !item.IsOpened).ToList();
 
-        if (list_item.Count >= 2)
+        if (list_item.Count >= 1)
         {
-            MatchItemUI itemFirst = list_item[UnityEngine.Random.Range(0, list_item.Count)];
-            list_item.Remove(itemFirst);
+           foreach (MatchItemUI item in list_item)
+            {
+                if(item != null)
+                {
+                    item.OpenAnimTrigger();
+                }
+            }
 
-            int idItem = itemFirst.Id;
-            MatchItemUI itemSecond = list_item.Where(item => item.Id == idItem).First();
-
-            itemFirst.OpenAnimTrigger();
-            itemSecond.OpenAnimTrigger();
-
-            StartCoroutine(HideHint(itemFirst, itemSecond, 2.0f));
+            StartCoroutine(HideHint(list_item, 2.0f));
         }
         else
         {
@@ -36,14 +34,19 @@ public class HintHelp : MonoBehaviour ,IGameHelp
         }
 
     }
-    private IEnumerator HideHint(MatchItemUI itemFirst, MatchItemUI itemSecond, float delay)
+    private IEnumerator HideHint(List<MatchItemUI> list, float delay)
     {
         yield return new WaitForSeconds(delay);
 
-        if (itemFirst != null && itemSecond != null)
+        if (list != null && list.Count >= 1)
         {
-            itemFirst.OpenAnimTrigger();
-            itemSecond.OpenAnimTrigger();
+            foreach(MatchItemUI item in list)
+            {
+                if(item != null)
+                {
+                    item.OpenAnimTrigger();
+                }
+            }
         }
     }
 

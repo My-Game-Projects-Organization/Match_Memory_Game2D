@@ -10,9 +10,9 @@ public class GameManager : Singleton<GameManager>
     public Transform gridRoot;
     public GameState state;
     private List<MatchItem> m_matchItemsCopy;
-    private List<MatchItemUI> m_matchItemUIs;
+    public List<MatchItemUI> m_matchItemUIs;
     private List<MatchItemUI> m_answers;
-    private float m_timeCounting;
+    public float m_timeCounting;
     private int m_totalMatchItem;
     private int m_totalMoving;
     private int m_rightMoving;
