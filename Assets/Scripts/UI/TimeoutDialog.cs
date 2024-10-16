@@ -11,7 +11,13 @@ public class TimeoutDialog : Dialog
         if(SceneController.Ins)
             SceneController.Ins.LoadCurrentScene();
     }
-
+    public void PlaySoundBtn()
+    {
+        if (AudioController.Ins)
+        {
+            AudioController.Ins.PlaySound(AudioController.Ins.btnClick);
+        }
+    }
     public void Replay()
     {
         SceneManager.sceneLoaded += OnSceneLoadedEvent;

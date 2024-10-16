@@ -15,6 +15,10 @@ public class AudioController : Singleton<AudioController>
     public AudioSource sfxAus;
 
     [Header("Game sounds and musics: ")]
+    public AudioClip btnClick;
+    public AudioClip helpBtnClick;
+    public AudioClip flipCard;
+    public AudioClip bonusTime;
     public AudioClip right;
     public AudioClip wrong;
     public AudioClip timeOut;

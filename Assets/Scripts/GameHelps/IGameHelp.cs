@@ -4,9 +4,14 @@ using UnityEngine;
 
 public interface IGameHelp 
 {
+
     void ExecuteHelp();
 
     bool CanUseHelp();
 
     void ShowHelpInfo();
+
+    void UpdateNumberOfHelp();
+
+    void PlaySoundBtn();
 }

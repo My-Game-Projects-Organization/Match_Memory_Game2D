@@ -10,13 +10,15 @@ public class GameManager : Singleton<GameManager>
     public Transform gridRoot;
     public GameState state;
     private List<MatchItem> m_matchItemsCopy;
-    private List<MatchItemUI> m_matchItemUIs;
+    public List<MatchItemUI> m_matchItemUIs;
     private List<MatchItemUI> m_answers;
-    private float m_timeCounting;
+    public float m_timeCounting;
     private int m_totalMatchItem;
     private int m_totalMoving;
     private int m_rightMoving;
     private bool m_isAnswerChecking;
+
+    [SerializeField] public GameObject messImg;
 
     public int TotalMoving { get => m_totalMoving;}
     public int RightMoving { get => m_rightMoving;}
@@ -138,6 +140,7 @@ public class GameManager : Singleton<GameManager>
                     var answer = m_answers[i];
                     if (answer)
                         answer.ExplodeAnimTrigger();
+                    m_matchItemUIs.Remove(answer);
                     if (AudioController.Ins)
                         AudioController.Ins.PlaySound(AudioController.Ins.right);
                 }    

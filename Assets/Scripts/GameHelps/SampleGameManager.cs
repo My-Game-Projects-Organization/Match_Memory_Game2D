@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SampleGameManager : MonoBehaviour
@@ -34,7 +35,46 @@ public class SampleGameManager : MonoBehaviour
         {
             foreach(MatchItemUI matchItemUI in m_matchItemUIs)
             {
-                //Debug.Log(matchItemUI.is)
+                Debug.Log(matchItemUI.IsOpened.ToString());
+            }
+            ShowHint();
+        }
+    }
+
+    private void ShowHint()
+    {
+        List<MatchItemUI> list_item = m_matchItemUIs.Where(item => !item.IsOpened).ToList();
+
+        if (list_item.Count >= 1)
+        {
+            foreach (MatchItemUI item in list_item)
+            {
+                if (item != null)
+                {
+                    item.OpenAnimTrigger();
+                }
+            }
+
+            StartCoroutine(HideHint(list_item, 2.0f));
+        }
+        else
+        {
+            Debug.Log("No item to show!");
+        }
+
+    }
+    private IEnumerator HideHint(List<MatchItemUI> list, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (list != null && list.Count >= 1)
+        {
+            foreach (MatchItemUI item in list)
+            {
+                if (item != null)
+                {
+                    item.OpenAnimTrigger();
+                }
             }
         }
     }

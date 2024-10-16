@@ -1,14 +1,13 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HintHelp : MonoBehaviour ,IGameHelp
+public class ExtraHintHelp : MonoBehaviour, IGameHelp
 {
     [SerializeField] private Text numberOfTxt;
-    
+
     private int remainingHints = 3;
 
     private void Awake()
@@ -25,18 +24,17 @@ public class HintHelp : MonoBehaviour ,IGameHelp
     {
         List<MatchItemUI> list_item = GameManager.Ins.m_matchItemUIs.Where(item => !item.IsOpened).ToList();
 
-        if (list_item.Count >= 2)
+        if (list_item.Count >= 1)
         {
-            MatchItemUI itemFirst = list_item[UnityEngine.Random.Range(0, list_item.Count)];
-            list_item.Remove(itemFirst);
+           foreach (MatchItemUI item in list_item)
+            {
+                if(item != null)
+                {
+                    item.OpenAnimTrigger();
+                }
+            }
 
-            int idItem = itemFirst.Id;
-            MatchItemUI itemSecond = list_item.Where(item => item.Id == idItem).First();
-
-            itemFirst.OpenAnimTrigger();
-            itemSecond.OpenAnimTrigger();
-
-            StartCoroutine(HideHint(itemFirst, itemSecond, 2.0f));
+            StartCoroutine(HideHint(list_item, 2.0f));
         }
         else
         {
@@ -44,14 +42,19 @@ public class HintHelp : MonoBehaviour ,IGameHelp
         }
 
     }
-    private IEnumerator HideHint(MatchItemUI itemFirst, MatchItemUI itemSecond, float delay)
+    private IEnumerator HideHint(List<MatchItemUI> list, float delay)
     {
         yield return new WaitForSeconds(delay);
 
-        if (itemFirst != null && itemSecond != null)
+        if (list != null && list.Count >= 1)
         {
-            itemFirst.OpenAnimTrigger();
-            itemSecond.OpenAnimTrigger();
+            foreach(MatchItemUI item in list)
+            {
+                if(item != null)
+                {
+                    item.OpenAnimTrigger();
+                }
+            }
         }
     }
 
@@ -66,7 +69,7 @@ public class HintHelp : MonoBehaviour ,IGameHelp
         else
         {
             GameObject gridObj = GameObject.Find("MatchArea");
-            if(gridObj != null)
+            if (gridObj != null)
             {
                 gridObj.SetActive(false);
             }
@@ -79,12 +82,11 @@ public class HintHelp : MonoBehaviour ,IGameHelp
             }
         }
     }
-
     private IEnumerator HideMessageImg(GameObject messImg, GameObject gridGameObj, float delay)
     {
         yield return new WaitForSeconds(delay);
 
-        if(gridGameObj != null)
+        if (gridGameObj != null)
         {
             gridGameObj.SetActive(true);
         }
@@ -94,6 +96,7 @@ public class HintHelp : MonoBehaviour ,IGameHelp
             messImg.SetActive(false);
         }
     }
+
 
     public void ShowHelpInfo()
     {
@@ -106,15 +109,13 @@ public class HintHelp : MonoBehaviour ,IGameHelp
             Debug.Log("No hints remaining.");
         }
     }
-
     public void UpdateNumberOfHelp()
     {
-        if(numberOfTxt != null)
+        if (numberOfTxt != null)
         {
             numberOfTxt.text = remainingHints.ToString();
         }
     }
-
     public void PlaySoundBtn()
     {
         if (AudioController.Ins)
