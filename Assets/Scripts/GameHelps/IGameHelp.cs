@@ -10,4 +10,8 @@ public interface IGameHelp
     bool CanUseHelp();
 
     void ShowHelpInfo();
+
+    void UpdateNumberOfHelp();
+
+    void PlaySoundBtn();
 }

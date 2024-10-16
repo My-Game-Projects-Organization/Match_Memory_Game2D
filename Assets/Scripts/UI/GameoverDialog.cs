@@ -9,6 +9,14 @@ public class GameoverDialog : Dialog
     public Text totalMoveTxt;
     public Text bestMoveTxt;
 
+    public void PlaySoundBtn()
+    {
+        if (AudioController.Ins)
+        {
+            AudioController.Ins.PlaySound(AudioController.Ins.btnClick);
+        }
+    }
+
     public override void Show(bool isShow)
     {
         base.Show(isShow);

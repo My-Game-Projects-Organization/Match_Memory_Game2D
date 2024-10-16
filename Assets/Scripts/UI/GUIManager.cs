@@ -11,10 +11,32 @@ public class GUIManager : Singleton<GUIManager>
     public PauseDialog pauseDialog;
     public TimeoutDialog timeoutDialog;
     public GameoverDialog gameoverDialog;
+    public Button btnStart;
+    public Button btnMenu;
 
     public override void Awake()
     {
         MakeSingleton(false);
+    }
+    public override void Start()
+    {
+        btnStart.onClick.RemoveAllListeners();
+        btnStart.onClick.AddListener(() =>
+        {
+            if (AudioController.Ins)
+            {
+                AudioController.Ins.PlaySound(AudioController.Ins.btnClick);
+            }
+        });
+
+        btnMenu.onClick.RemoveAllListeners();
+        btnMenu.onClick.AddListener(() =>
+        {
+            if (AudioController.Ins)
+            {
+                AudioController.Ins.PlaySound(AudioController.Ins.btnClick);
+            }
+        });
     }
 
     public void ShowGameplay(bool isShow)

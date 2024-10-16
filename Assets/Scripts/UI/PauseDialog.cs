@@ -9,7 +9,13 @@ public class PauseDialog : Dialog
         base.Show(isShow);
         Time.timeScale = 0f;
     }
-
+    public void PlaySoundBtn()
+    {
+        if (AudioController.Ins)
+        {
+            AudioController.Ins.PlaySound(AudioController.Ins.btnClick);
+        }
+    }
     public void Resume()
     {
         Time.timeScale = 1f;

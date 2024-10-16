@@ -18,6 +18,8 @@ public class GameManager : Singleton<GameManager>
     private int m_rightMoving;
     private bool m_isAnswerChecking;
 
+    [SerializeField] public GameObject messImg;
+
     public int TotalMoving { get => m_totalMoving;}
     public int RightMoving { get => m_rightMoving;}
 
@@ -138,6 +140,7 @@ public class GameManager : Singleton<GameManager>
                     var answer = m_answers[i];
                     if (answer)
                         answer.ExplodeAnimTrigger();
+                    m_matchItemUIs.Remove(answer);
                     if (AudioController.Ins)
                         AudioController.Ins.PlaySound(AudioController.Ins.right);
                 }    
