@@ -37,8 +37,8 @@ public class GameoverDialog : Dialog
     private void OnSceneLoadedEvent(Scene scene, LoadSceneMode mode)
     {
 
-        if (GameManager.Ins)
-            GameManager.Ins.PlayGame();
+        //if (GameManager.Ins)
+        //    GameManager.Ins.PlayGame();
 
         SceneManager.sceneLoaded -= OnSceneLoadedEvent;
     }

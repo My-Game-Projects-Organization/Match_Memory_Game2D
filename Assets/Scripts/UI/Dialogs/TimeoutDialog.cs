@@ -6,10 +6,21 @@ using UnityEngine.SceneManagement;
 
 public class TimeoutDialog : Dialog
 {
-    public void BackToMenu()
+    public void QuitToMainMenu()
     {
-        if(SceneController.Ins)
-            SceneController.Ins.LoadCurrentScene();
+        if (SpriteLoader.Ins)
+            SpriteLoader.Ins.ReleaseAssets();
+        DestroyPersistentObjects();
+        SceneManager.LoadScene("MainScene");
+    }
+
+    void DestroyPersistentObjects()
+    {
+        GameObject[] persistentObjects = GameObject.FindGameObjectsWithTag("Persistent");
+        foreach (GameObject obj in persistentObjects)
+        {
+            Destroy(obj);
+        }
     }
     public void PlaySoundBtn()
     {

@@ -7,7 +7,7 @@ public class SceneController : Singleton<SceneController>
 {
     public override void Awake()
     {
-        MakeSingleton(false);
+        MakeSingleton(true);
     }
     //load lai scene hien tai dang choi
     public void LoadCurrentScene()

@@ -180,8 +180,8 @@ public class SampleGameManager : MonoBehaviour
         if (m_rightMoving == m_totalMatchItem)
         {
             Pref.bestMove = m_totalMoving;
-            if (GUIManager.Ins)
-                GUIManager.Ins.gameoverDialog.Show(true);
+            if (DialogManager.Ins)
+                DialogManager.Ins.gameoverDialog.Show(true);
             if (AudioController.Ins)
                 AudioController.Ins.PlaySound(AudioController.Ins.gameover);
             Debug.Log("Gameover!!!");
