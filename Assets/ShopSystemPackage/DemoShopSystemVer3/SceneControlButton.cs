@@ -1,0 +1,41 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace ShopSystemPackage
+{
+
+    public class SceneControlButton : MonoBehaviour
+    {
+        enum TargetScene
+        {
+            Next,
+            Previous,
+            MainMenu
+        }
+
+        [SerializeField] TargetScene targetScene;
+        Button button;
+
+        private void Start()
+        {
+            button = GetComponent<Button>();
+
+            button.onClick.RemoveAllListeners();
+            switch (targetScene)
+            {
+                case TargetScene.MainMenu:
+                    button.onClick.AddListener(() => SceneController.LoadMainScene());
+                    break;
+                case TargetScene.Next:
+                    button.onClick.AddListener(() => SceneController.LoadNextScene());
+                    break;
+                case TargetScene.Previous:
+                    button.onClick.AddListener(() => SceneController.LoadPreviosScene());
+                    break;
+            }
+        }
+    }
+
+}
