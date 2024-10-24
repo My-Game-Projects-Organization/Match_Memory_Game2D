@@ -13,6 +13,7 @@ public class HintHelp : MonoBehaviour ,IGameHelp
 
     private void Awake()
     {
+        remainingHints = Pref.nOHintHelp;
         UpdateNumberOfHelp();
     }
 
@@ -61,6 +62,7 @@ public class HintHelp : MonoBehaviour ,IGameHelp
         {
             ShowHint();
             remainingHints--;
+            Pref.nOHintHelp = remainingHints;
             UpdateNumberOfHelp();
         }
         else

@@ -12,6 +12,7 @@ public class ExtraHintHelp : MonoBehaviour, IGameHelp
 
     private void Awake()
     {
+        remainingHints = Pref.nOExtraHintHelp;
         UpdateNumberOfHelp();
     }
 
@@ -64,6 +65,7 @@ public class ExtraHintHelp : MonoBehaviour, IGameHelp
         {
             ShowHint();
             remainingHints--;
+            Pref.nOExtraHintHelp = remainingHints;
             UpdateNumberOfHelp();
         }
         else

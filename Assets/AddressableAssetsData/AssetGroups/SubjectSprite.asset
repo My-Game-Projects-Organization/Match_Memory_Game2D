@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: SubjectSprite
+  m_EditorClassIdentifier: 
+  m_GroupName: SubjectSprite
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 240d15a732c0cc4429c5ec1a196f7bd5
+  m_SerializeEntries:
+  - m_GUID: 345fb93eeab549f43913f436e961b343
+    m_Address: Assets/Art/Sprites/Gameplay/Animal01.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - subject1
+  - m_GUID: ad9e17b151f9937498545462fba2e91a
+    m_Address: Assets/Art/Sprites/Gameplay/Animal02.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - subject1
+  - m_GUID: 66b3e8ac16a942a4b89dae1ab771b3d2
+    m_Address: Assets/Art/Sprites/Gameplay/Animal03.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - subject1
+  - m_GUID: 36122e12e9b7c184e98a62b5aa777d70
+    m_Address: Assets/Art/Sprites/Gameplay/Animal04.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - subject1
+  - m_GUID: 62ab2697dccc6634faa00a4f68274d4b
+    m_Address: Assets/Art/Sprites/Gameplay/Animal05.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - subject1
+  - m_GUID: 1163706a0ce07e84a91cb3f451b9be41
+    m_Address: Assets/Art/Sprites/Gameplay/Animal06.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - subject1
+  - m_GUID: df12a5cfd7b1d1045a90fd3f945b1c00
+    m_Address: Assets/Art/Sprites/Gameplay/Animal07.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - subject1
+  - m_GUID: c70e036fb1f5ca5459fc1504b9992010
+    m_Address: Assets/Art/Sprites/Gameplay/Animal08.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - subject1
+  - m_GUID: e45dbec533b82b3468bcb9d0ecde8c56
+    m_Address: Assets/Art/Sprites/Gameplay/Animal09.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - subject1
+  - m_GUID: cf518712daf6ad243850101f04b755b4
+    m_Address: Assets/Art/Sprites/Gameplay/Animal10.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - subject1
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 3cd1b9ac131513f4e9f2a51509ebe58f, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 54ceca8e00633684d8324a1460ca906c, type: 2}
+    - {fileID: 11400000, guid: 15cf4de0be0c98541b71f0529c919434, type: 2}

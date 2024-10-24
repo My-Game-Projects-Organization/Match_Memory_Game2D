@@ -13,6 +13,7 @@ public class ExtraTimeHelp : MonoBehaviour, IGameHelp
 
     private void Awake()
     {
+        remainingHints = Pref.nOExtraTimeHelp;
         UpdateNumberOfHelp();
     }
 
@@ -26,10 +27,11 @@ public class ExtraTimeHelp : MonoBehaviour, IGameHelp
         if (CanUseHelp())
         {
             GameManager.Ins.m_timeCounting += 5.0f;
-            if (GUIManager.Ins)
-                GUIManager.Ins.UpdateTimeBar((float)GameManager.Ins.m_timeCounting, (float)GameManager.Ins.timeLimit);
+            if (DialogManager.Ins)
+                DialogManager.Ins.UpdateTimeBar((float)GameManager.Ins.m_timeCounting, (float)GameManager.Ins.timeLimit);
 
             remainingHints--;
+            Pref.nOExtraTimeHelp = remainingHints;
             if(bonusTimeTxt != null)
             {
                 bonusTimeTxt.SetActive(true);
