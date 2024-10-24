@@ -23,10 +23,14 @@ public enum GameState
     Starting,
     Playing,
     Timeout,
-    Gameover
+    Completed
 }
 
 public enum PrefKey
 {
-    BestScore
+    NOExtraHintHelp,
+    NOExtraTimeHelp,
+    NOHintHelp,
+    BestScore,
+    IsFirstTimeStartGame
 }

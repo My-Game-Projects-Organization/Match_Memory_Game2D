@@ -1,6 +1,7 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PauseDialog : Dialog
 {
@@ -21,12 +22,25 @@ public class PauseDialog : Dialog
         Time.timeScale = 1f;
         Close();
     }
-
-    public void BackToMenu()
+    public void QuitToMainMenu()
     {
         Time.timeScale = 1;
 
-        if(SceneController.Ins)
-            SceneController.Ins.LoadCurrentScene();
+        if(SpriteLoader.Ins)
+            SpriteLoader.Ins.ReleaseAssets();
+
+        DestroyPersistentObjects(); 
+        SceneManager.LoadScene("MainScene");
     }
+
+    void DestroyPersistentObjects()
+    {
+        GameObject[] persistentObjects = GameObject.FindGameObjectsWithTag("Persistent");
+        foreach (GameObject obj in persistentObjects)
+        {
+            Destroy(obj);
+        }
+    }
+
+
 }
