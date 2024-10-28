@@ -35,10 +35,13 @@ public class SpriteLoader : Singleton<SpriteLoader>
             Debug.LogError("Failed to load sprites!");
         }
     }
+    
 
     public void ReleaseAssets()
     {
-        Addressables.Release(loadedSprites);
+        if(loadedSprites != null)
+            Addressables.Release(loadedSprites);
         loadedSprites.Clear();
     }
+   
 }

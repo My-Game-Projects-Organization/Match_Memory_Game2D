@@ -8,6 +8,7 @@ public class GameoverDialog : Dialog
 {
     public Text totalMoveTxt;
     public Text bestMoveTxt;
+    public Image[] starArray;
 
     public void PlaySoundBtn()
     {
@@ -17,7 +18,7 @@ public class GameoverDialog : Dialog
         }
     }
 
-    public override void Show(bool isShow)
+    public void Show(bool isShow, int starArchived)
     {
         base.Show(isShow);
 
@@ -26,9 +27,23 @@ public class GameoverDialog : Dialog
 
         if(bestMoveTxt)
             bestMoveTxt.text = Pref.bestMove.ToString();
+        if(starArray != null && starArray.Length > 0)
+        {
+            HideStarArchived();
+            starArray[starArchived - 1].gameObject.SetActive(true);
+        }
     }
-
-    public void Continue()
+    private void HideStarArchived()
+    {
+        for (int i = 0; i < starArray.Length; i++)             //loop through entire star array
+        {
+            if (starArray[i] != null)
+            {
+                starArray[i].gameObject.SetActive(false);
+            }
+        }
+    }
+        public void Continue()
     {
         SceneManager.sceneLoaded += OnSceneLoadedEvent;
         if (SceneController.Ins)

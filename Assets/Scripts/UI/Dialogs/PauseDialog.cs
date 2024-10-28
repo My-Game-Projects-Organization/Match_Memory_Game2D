@@ -26,11 +26,13 @@ public class PauseDialog : Dialog
     {
         Time.timeScale = 1;
 
-        if(SpriteLoader.Ins)
-            SpriteLoader.Ins.ReleaseAssets();
+        if(AddressableManager.Ins)
+            AddressableManager.Ins.ReleaseAllAssets();
 
-        DestroyPersistentObjects(); 
-        SceneManager.LoadScene("MainScene");
+        DestroyPersistentObjects();
+        if (DialogManager.Ins)
+            DialogManager.Ins.sceneTransition.ChangeScene("MainScene");
+
     }
 
     void DestroyPersistentObjects()

@@ -8,8 +8,8 @@ public class TimeoutDialog : Dialog
 {
     public void QuitToMainMenu()
     {
-        if (SpriteLoader.Ins)
-            SpriteLoader.Ins.ReleaseAssets();
+        if (AddressableManager.Ins)
+            AddressableManager.Ins.ReleaseAllAssets();
         DestroyPersistentObjects();
         SceneManager.LoadScene("MainScene");
     }

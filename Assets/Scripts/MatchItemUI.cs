@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -70,5 +70,9 @@ public class MatchItemUI : MonoBehaviour
         }
         if(btnComp)
             btnComp.enabled = !IsOpened;
+    }
+    public void OnDieAnimationComplete()
+    {
+        gameObject.SetActive(false); 
     }
 }

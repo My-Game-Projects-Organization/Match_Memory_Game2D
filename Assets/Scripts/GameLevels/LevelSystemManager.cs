@@ -49,9 +49,11 @@ public class LevelSystemManager : Singleton<LevelSystemManager>
         levelData.levelScriptableDatas = new List<LevelScriptableData>();
     }
 
-    public void LevelComplete(int curLevel)
+    public void LevelComplete(int curLevel, int star)
     {
-        if(LevelData.lastUnlockedLevel < (curLevel + 1))
+        if(star >= LevelData.levelScriptableDatas[curLevel].startArchived)
+            LevelData.levelScriptableDatas[curLevel].startArchived = star;
+        if (LevelData.lastUnlockedLevel < (curLevel + 1))
         {
             LevelData.lastUnlockedLevel = curLevel + 1;
             if(LevelData.lastUnlockedLevel > LevelData.levelScriptableDatas.Count - 1)

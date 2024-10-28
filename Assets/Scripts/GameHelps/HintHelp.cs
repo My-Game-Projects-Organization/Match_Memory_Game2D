@@ -19,6 +19,7 @@ public class HintHelp : MonoBehaviour ,IGameHelp
 
     public bool CanUseHelp()
     {
+        remainingHints = Pref.nOHintHelp;
         return remainingHints > 0;
     }
 
@@ -37,6 +38,8 @@ public class HintHelp : MonoBehaviour ,IGameHelp
             itemFirst.OpenAnimTrigger();
             itemSecond.OpenAnimTrigger();
 
+            if (GameManager.Ins && GameManager.Ins.helpBtns != null && GameManager.Ins.helpBtns.Length > 0)
+                GameManager.Ins.SetEnableBtn(false);
             StartCoroutine(HideHint(itemFirst, itemSecond, 2.0f));
         }
         else
@@ -54,6 +57,8 @@ public class HintHelp : MonoBehaviour ,IGameHelp
             itemFirst.OpenAnimTrigger();
             itemSecond.OpenAnimTrigger();
         }
+        if (GameManager.Ins && GameManager.Ins.helpBtns != null && GameManager.Ins.helpBtns.Length > 0)
+            GameManager.Ins.SetEnableBtn(true);
     }
 
     public void ExecuteHelp()
@@ -62,7 +67,7 @@ public class HintHelp : MonoBehaviour ,IGameHelp
         {
             ShowHint();
             remainingHints--;
-            Pref.nOHintHelp = remainingHints;
+            Pref.nOHintHelp--;
             UpdateNumberOfHelp();
         }
         else

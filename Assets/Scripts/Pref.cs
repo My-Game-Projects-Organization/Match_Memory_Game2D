@@ -59,4 +59,13 @@ public static class Pref
         }
         get => PlayerPrefs.GetInt(PrefKey.NOHintHelp.ToString(), 0);
     }
+
+    public static int startcoins
+    {
+        set
+        {
+            PlayerPrefs.SetInt(PrefKey.StartCoins.ToString(), value);
+        }
+        get => PlayerPrefs.GetInt(PrefKey.StartCoins.ToString(), 0);
+    }
 }

@@ -23,17 +23,25 @@ namespace ShopSystemPackage
         #endregion
 
         [SerializeField] Text[] coinsUIText;
-
+        [SerializeField] Text[] hintCountUIText;
         private void Start()
         {
             UpdateCoinsUIText();
+        }
+
+        public void UpdateHintCountUIText()
+        {
+            SetCoinsText(hintCountUIText[0], Pref.nOHintHelp);
+            SetCoinsText(hintCountUIText[1], Pref.nOExtraHintHelp);
+            SetCoinsText(hintCountUIText[2], Pref.nOExtraTimeHelp);
+
         }
 
         public void UpdateCoinsUIText()
         {
             for (int i = 0; i < coinsUIText.Length; i++)
             {
-                SetCoinsText(coinsUIText[i], GameDataManager.GetCOins());
+                SetCoinsText(coinsUIText[i], Pref.startcoins);
             }
         }
 
