@@ -59,4 +59,12 @@ public static class Pref
         }
         get => PlayerPrefs.GetInt(PrefKey.NOHintHelp.ToString(), 0);
     }
+    public static int levelVersion
+    {
+        set
+        {
+            PlayerPrefs.SetInt(PrefKey.LevelVersion.ToString(), value);
+        }
+        get => PlayerPrefs.GetInt(PrefKey.LevelVersion.ToString(), 0);
+    }
 }

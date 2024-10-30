@@ -23,16 +23,7 @@ public class SaveLoadData : Singleton<SaveLoadData>
     }
     public void Initialize()
     {
-        if(Pref.isFirstTimeStartGame)
-        {
-            GetAllLevelDataFromResources();
-            SaveData();
-            Pref.isFirstTimeStartGame = false;
-        }
-        else
-        {
-            LoadData();
-        }
+        LoadData();
     }
     private int ExtractLevelNumber(string name)
     {
@@ -97,6 +88,31 @@ public class SaveLoadData : Singleton<SaveLoadData>
             Debug.Log("Level is null" + e1);
         }
     }
+    public string LoadStringLevelsDataFromLocal()
+    {
+        string levelDataString = "";
+        try
+        {
+            levelDataString = System.IO.File.ReadAllText(Application.persistentDataPath + "/LevelData.json");
+            Debug.Log("Log json: " + levelDataString);
+            LevelData levelData = JsonConvert.DeserializeObject<LevelData>(levelDataString);
+            if (levelData != null)
+            {
+                Debug.Log(LevelSystemManager.Ins.LevelData.lastUnlockedLevel + "");
+            }
+            Debug.Log("<color=green>[Level Data] Loaded.</color>");
+        }
+        catch (MissingReferenceException e)
+        {
+            Debug.Log("Error Loading Data" + e);
+        }
+        catch (NullReferenceException e1)
+        {
+            Debug.Log("Level is null" + e1);
+        }
+
+        return levelDataString;
+    }
     public void ClearData()
     {
         Debug.Log("Data Cleared");
@@ -111,6 +127,7 @@ public class SaveLoadData : Singleton<SaveLoadData>
         Pref.nOExtraHintHelp = 3;
         Pref.nOExtraTimeHelp = 3;
         Pref.isFirstTimeStartGame = true;
+        Pref.levelVersion = 0;
     }
     void CheckStateLevelDataFromLevelSystem()
     {
