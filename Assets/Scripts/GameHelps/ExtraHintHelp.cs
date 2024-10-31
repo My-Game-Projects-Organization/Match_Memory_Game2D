@@ -18,6 +18,7 @@ public class ExtraHintHelp : MonoBehaviour, IGameHelp
 
     public bool CanUseHelp()
     {
+        remainingHints = Pref.nOExtraHintHelp;
         return remainingHints > 0;
     }
 
@@ -33,9 +34,10 @@ public class ExtraHintHelp : MonoBehaviour, IGameHelp
                 {
                     item.OpenAnimTrigger();
                 }
-            }
-
-            StartCoroutine(HideHint(list_item, 2.0f));
+           }
+            if (GameManager.Ins && GameManager.Ins.helpBtns != null && GameManager.Ins.helpBtns.Length > 0)
+                GameManager.Ins.SetEnableBtn(false);
+           StartCoroutine(HideHint(list_item, 2.0f));
         }
         else
         {
@@ -57,6 +59,8 @@ public class ExtraHintHelp : MonoBehaviour, IGameHelp
                 }
             }
         }
+        if (GameManager.Ins && GameManager.Ins.helpBtns != null && GameManager.Ins.helpBtns.Length > 0)
+            GameManager.Ins.SetEnableBtn(true);
     }
 
     public void ExecuteHelp()
@@ -65,7 +69,7 @@ public class ExtraHintHelp : MonoBehaviour, IGameHelp
         {
             ShowHint();
             remainingHints--;
-            Pref.nOExtraHintHelp = remainingHints;
+            Pref.nOExtraHintHelp--;
             UpdateNumberOfHelp();
         }
         else

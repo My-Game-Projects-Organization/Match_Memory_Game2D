@@ -7,6 +7,8 @@ public class LevelScriptableData : ScriptableObject
 {
     public int nOPairs;
     public int timeLimit;
+    public int startArchived;
+    public int modeLevel;
     public bool unlocked;
     /* advanced features
     public int nOColumns;

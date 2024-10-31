@@ -19,6 +19,7 @@ public class ExtraTimeHelp : MonoBehaviour, IGameHelp
 
     public bool CanUseHelp()
     {
+        remainingHints = Pref.nOExtraTimeHelp;
         return remainingHints > 0;
     }
 
@@ -31,8 +32,8 @@ public class ExtraTimeHelp : MonoBehaviour, IGameHelp
                 DialogManager.Ins.UpdateTimeBar((float)GameManager.Ins.m_timeCounting, (float)GameManager.Ins.timeLimit);
 
             remainingHints--;
-            Pref.nOExtraTimeHelp = remainingHints;
-            if(bonusTimeTxt != null)
+            Pref.nOExtraTimeHelp--;
+            if (bonusTimeTxt != null)
             {
                 bonusTimeTxt.SetActive(true);
                 StartCoroutine(HideBonusTimeTxt(5.0f));

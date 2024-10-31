@@ -10,8 +10,11 @@ public class LevelEditorWindow : EditorWindow
     private int curLevel = 0;
     private int selectedIndex;
     private string[] NumberOfPairs = { "2", "6", "10" };
+    private int selectedModeLevel;
+    private string[] NumberOfModes = { "1", "2", "3" };
 
     private int timeLimit;
+    private int startArchived;
     private bool unlocked;
     /* advanced feature
     private string[] ChoiceOfHelps = {"","",""};
@@ -34,13 +37,18 @@ public class LevelEditorWindow : EditorWindow
         GUILayout.Label($"Current Level: {curLevel}");
 
         GUILayout.Space(15);
-        Rect rect = new Rect(5, 5, 30, 20);
-        // Tạo Dropdown với EditorGUI.Popup
         selectedIndex = EditorGUILayout.Popup("Type Of NOPairs", selectedIndex, NumberOfPairs);
         GUILayout.Space(5);  
         GUILayout.Label($"Number Of Pairs: {NumberOfPairs[selectedIndex]}");
+
+        GUILayout.Space(15);
+        selectedModeLevel = EditorGUILayout.Popup("Type Of Modes", selectedModeLevel, NumberOfModes);
         GUILayout.Space(5);
+        GUILayout.Label($"Number Of Modes: {NumberOfModes[selectedModeLevel]}");
+        GUILayout.Space(5);
+
         timeLimit = EditorGUILayout.IntField("Time Limit", timeLimit);
+        startArchived = EditorGUILayout.IntField("Start Archived", startArchived);
         unlocked = EditorGUILayout.Toggle("Unlocked", false);
         Debug.Log("noPairs " + selectedIndex);
         Debug.Log("timelimit " + timeLimit);
@@ -50,6 +58,8 @@ public class LevelEditorWindow : EditorWindow
             LevelScriptableData newLevel = ScriptableObject.CreateInstance<LevelScriptableData>();
             newLevel.nOPairs = Convert.ToInt32(NumberOfPairs[selectedIndex].ToString());
             newLevel.timeLimit = Convert.ToInt32(timeLimit.ToString());
+            newLevel.startArchived = Convert.ToInt32(startArchived.ToString());
+            newLevel.modeLevel = Convert.ToInt32(NumberOfModes[selectedModeLevel].ToString());
             newLevel.unlocked = unlocked;
 
             AssetDatabase.CreateAsset(newLevel, "Assets/Resources/Level_" + curLevel + ".asset");

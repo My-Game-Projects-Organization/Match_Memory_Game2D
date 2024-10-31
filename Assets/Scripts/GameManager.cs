@@ -26,8 +26,10 @@ public class GameManager : Singleton<GameManager>
     private bool m_isAnswerChecking;
     private List<LevelScriptableData> m_listLevelScriptsData;
 
-    [SerializeField] private SpriteLoader m_spriteLoader; 
+    [SerializeField] private AddressableManager m_spriteLoader; 
     [SerializeField] public GameObject messImg;
+    [SerializeField] public Button[] helpBtns;
+
 
     public int TotalMoving { get => m_totalMoving;}
     public int RightMoving { get => m_rightMoving;}
@@ -40,10 +42,9 @@ public class GameManager : Singleton<GameManager>
     {
         base.Start();
         
-        if(SpriteLoader.Ins)
-            m_spriteLoader = SpriteLoader.Ins;
+        if(AddressableManager.Ins)
+            m_spriteLoader = AddressableManager.Ins;
 
-        m_spriteLoader.OnSpritesLoaded += GenerateMatchItem;
 
         m_listLevelScriptsData = LevelSystemManager.Ins.LevelData.levelScriptableDatas;
 
@@ -68,7 +69,13 @@ public class GameManager : Singleton<GameManager>
         state = GameState.Starting;
         timeLimit = m_listLevelScriptsData[LevelSystemManager.Ins.CurrentLevel].timeLimit;
         m_timeCounting = timeLimit;
-        StartCoroutine(m_spriteLoader.LoadSprites("subject1"));
+
+        if (AddressableManager.Ins && AddressableManager.Ins.loadedSprites != null && AddressableManager.Ins.loadedSprites.Count > 0)
+        {
+            List<Sprite> list = AddressableManager.Ins.GetLoadedAsset("subject1");
+            if (list != null && list.Count > 0)
+                GenerateMatchItem(list);
+        }
     }
 
     private void Update()
@@ -93,7 +100,12 @@ public class GameManager : Singleton<GameManager>
 
     public void PlayGame()
     {
-        StartCoroutine(m_spriteLoader.LoadSprites("subject1"));
+        if(AddressableManager.Ins && AddressableManager.Ins.loadedSprites != null && AddressableManager.Ins.loadedSprites.Count > 0)
+        {
+            List<Sprite> list = AddressableManager.Ins.GetLoadedAsset("subject1");
+            if(list != null && list.Count > 0)
+                GenerateMatchItem(list);
+        }
     }
     public List<Sprite> GetRandomSprites(List<Sprite> inputList, int count)
     {
@@ -172,6 +184,7 @@ public class GameManager : Singleton<GameManager>
 
                     m_answers.Add(matchItemUIClone);
                     matchItemUIClone.OpenAnimTrigger();
+                    SetEnableBtn(false);
                     if(m_answers.Count == 2)
                     {
                         m_totalMoving++;
@@ -241,7 +254,10 @@ public class GameManager : Singleton<GameManager>
                 {
                     var answer = m_answers[i];
                     if (answer)
+                    {
                         answer.ExplodeAnimTrigger();
+                        //answer.gameObject.SetActive(false);
+                    }
                     m_matchItemUIs.Remove(answer);
                     if (AudioController.Ins)
                         AudioController.Ins.PlaySound(AudioController.Ins.right);
@@ -259,19 +275,24 @@ public class GameManager : Singleton<GameManager>
                 }
             }
         }
-
+        SetEnableBtn(true);
         m_isAnswerChecking = false;
         m_answers.Clear();
 
         if(m_rightMoving == m_totalMatchItem)
         {
+            int starLevel = 0;
             Pref.bestMove = m_totalMoving;
             if (DialogManager.Ins)
-                DialogManager.Ins.gameoverDialog.Show(true);
+            {
+                starLevel = SetStarArchived(m_listLevelScriptsData[LevelSystemManager.Ins.CurrentLevel].modeLevel);
+                DialogManager.Ins.gameoverDialog.Show(true,starLevel);
+            }    
             if (AudioController.Ins)
                 AudioController.Ins.PlaySound(AudioController.Ins.gameover);
             state = GameState.Completed;
-            LevelSystemManager.Ins.LevelComplete(LevelSystemManager.Ins.CurrentLevel);
+            Pref.startcoins += starLevel;
+            LevelSystemManager.Ins.LevelComplete(LevelSystemManager.Ins.CurrentLevel, starLevel);
             LevelSystemManager.Ins.CurrentLevel++;
             if (LevelSystemManager.Ins.CurrentLevel > m_listLevelScriptsData.Count - 1)
             {
@@ -281,7 +302,79 @@ public class GameManager : Singleton<GameManager>
             Debug.Log("Level Completed!!!");
         }
     }
+    
+    public void SetEnableBtn(bool enable)
+    {
+        if(helpBtns != null && helpBtns.Length > 0)
+        {
+            for(int i = 0; i < helpBtns.Length; i++)
+            {
+                if (helpBtns[i] != null)
+                    helpBtns[i].interactable = enable;
+            }
+        }
+    }
 
+    private int SetStarArchived(int modeLevel)
+    {
+        float timeLost = m_listLevelScriptsData[LevelSystemManager.Ins.CurrentLevel].timeLimit - m_timeCounting;
+        int totalMoves = m_totalMoving;
+        int starArchived = RatingLevel(modeLevel, timeLost, totalMoves);
+
+        return starArchived;
+    }
+    private int RatingLevel(int mode, float timeLost, int bestMove)
+    {
+        int star = 0;
+        switch (mode)
+        {
+            case 1:
+                if (timeLost <= 20 && bestMove <= 3)
+                {
+                    star = 3;
+                }
+                else if(timeLost <= 40 && (bestMove <= 6 && bestMove > 3))
+                {
+                    star = 2;
+                }
+                else
+                {
+                    star = 1;
+                }
+                break;
+            case 2:
+                if (timeLost <= 60 && bestMove <= 11)
+                {
+                    star = 3;
+                }
+                else if (timeLost <= 80 && (bestMove <= 16 && bestMove > 11))
+                {
+                    star = 2;
+                }
+                else
+                {
+                    star = 1;
+                }
+                break;
+            case 3:
+                if (timeLost <= 100 && bestMove <= 20)
+                {
+                    star = 3;
+                }
+                else if (timeLost <= 200  && (bestMove <= 25 && bestMove > 20))
+                {
+                    star = 2;
+                }
+                else
+                {
+                    star = 1;
+                }
+                break;
+            default:
+                break;
+        }
+        return star;
+    }
     private void ShuffleMatchItems()
     {
         if (m_matchItemsCopy == null || m_matchItemsCopy.Count == 0) return;

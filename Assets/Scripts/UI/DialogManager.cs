@@ -9,6 +9,7 @@ public class DialogManager : Singleton<DialogManager>
     public PauseDialog pauseDialog;
     public TimeoutDialog timeoutDialog;
     public GameoverDialog gameoverDialog;
+    public SceneTransition sceneTransition;
 
     public override void Awake()
     {
