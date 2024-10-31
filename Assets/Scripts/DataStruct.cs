@@ -32,6 +32,7 @@ public enum PrefKey
     NOExtraTimeHelp,
     NOHintHelp,
     BestScore,
-    IsFirstTimeStartGame,
-    LevelVersion
+    LevelVersion,
+    StartCoins,
+    IsFirstTimeStartGame
 }

@@ -7,14 +7,9 @@ using UnityEngine.UI;
 public class GUIManager : Singleton<GUIManager>
 {
     public GameObject mainMenu;
-    //public GameObject gameplay;
     public GameObject levelMenu;
-    //public Image timeBar;
-    //public PauseDialog pauseDialog;
-    //public TimeoutDialog timeoutDialog;
-    //public GameoverDialog gameoverDialog;
     public Button btnStart;
-    //public Button btnMenu;
+    public SceneTransition sceneTransition;
 
     [SerializeField] private GameObject leveBtnGridHolder;
     [SerializeField] private LevelButtonScript levelBtnPrefab;
@@ -30,21 +25,15 @@ public class GUIManager : Singleton<GUIManager>
         btnStart.onClick.RemoveAllListeners();
         btnStart.onClick.AddListener(() =>
         {
+            if (AddressableManager.Ins)
+                StartCoroutine(AddressableManager.Ins.LoadSprites("subject1"));
+                
             ShowLevelMenu(true);
             if (AudioController.Ins)
             {
                 AudioController.Ins.PlaySound(AudioController.Ins.btnClick);
             }
         });
-
-        //btnMenu.onClick.RemoveAllListeners();
-        //btnMenu.onClick.AddListener(() =>
-        //{
-        //    if (AudioController.Ins)
-        //    {
-        //        AudioController.Ins.PlaySound(AudioController.Ins.btnClick);
-        //    }
-        //});
 
         InitializeUILevel();
     }
@@ -66,19 +55,4 @@ public class GUIManager : Singleton<GUIManager>
         if (levelMenu)
             levelMenu.SetActive(isShow);
     }
-    //public void ShowGameplay(bool isShow)
-    //{
-    //    if (gameplay) 
-    //        gameplay.SetActive(isShow);
-
-    //    if(levelMenu)
-    //        levelMenu.SetActive(!isShow);
-    //}
-
-    //public void UpdateTimeBar(float curTime,float totalTime)
-    //{
-    //    float rate = curTime / totalTime;
-    //    if (timeBar)
-    //        timeBar.fillAmount = rate;
-    //}
 }

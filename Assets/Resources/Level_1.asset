@@ -14,4 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nOPairs: 2
   timeLimit: 60
+  startArchived: 3
+  modeLevel: 1
   unlocked: 1

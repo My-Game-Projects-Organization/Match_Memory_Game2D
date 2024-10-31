@@ -126,6 +126,7 @@ public class SaveLoadData : Singleton<SaveLoadData>
         Pref.nOHintHelp = 3;
         Pref.nOExtraHintHelp = 3;
         Pref.nOExtraTimeHelp = 3;
+        Pref.startcoins = 0;
         Pref.isFirstTimeStartGame = true;
         Pref.levelVersion = 0;
     }

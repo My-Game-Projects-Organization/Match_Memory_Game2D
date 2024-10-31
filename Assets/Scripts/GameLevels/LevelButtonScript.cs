@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class LevelButtonScript : BaseButton
 {
-    [SerializeField] private GameObject btnLockObj, btnUnlockObj;
+    [SerializeField] private Image[] starsArray;
+    [SerializeField] private GameObject btnLockObj, btnUnlockObj, startBegin;
     [SerializeField] private Text levelIndexText;
 
     private int levelIndex;
@@ -23,6 +24,18 @@ public class LevelButtonScript : BaseButton
                 btnUnlockObj.SetActive(true);
                 btnLockObj.SetActive(false);
                 levelIndexText.text = levelIndex.ToString();
+
+                if(value.startArchived == 0)
+                {
+                    HideStarArchived();
+                    startBegin.SetActive(true);
+                }
+                else
+                {
+                    HideStarArchived();
+                    startBegin.SetActive(false);
+                    starsArray[value.startArchived - 1].gameObject.SetActive(true);
+                }
             }
         }
         else
@@ -30,17 +43,27 @@ public class LevelButtonScript : BaseButton
             base.button.interactable = false;
             btnLockObj.SetActive(true);
             btnUnlockObj.SetActive(false);
+            startBegin.SetActive(true);
         }
     }
-
+    private void HideStarArchived()
+    {
+        for (int i = 0; i < starsArray.Length; i++)             //loop through entire star array
+        {
+            if (starsArray[i] != null)
+            {
+                starsArray[i].gameObject.SetActive(false);
+            }
+        }
+    }
     protected override void OnClick()
     {
         // set value for curr level && show gameplay panel
         LevelSystemManager.Ins.CurrentLevel = levelIndex - 1;
         PlayerPrefs.SetInt("CurrentLevel", levelIndex - 1);
 
-        //if (GameManager.Ins)
-        //    GameManager.Ins.PlayGame();
-        SceneManager.LoadScene("GamePlay");
+        if (GUIManager.Ins)
+            GUIManager.Ins.sceneTransition.ChangeScene("GamePlay");
+        //SceneManager.LoadScene("GamePlay");
     }
 }
