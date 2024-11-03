@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using PlayFab;
+using PlayFab.ClientModels;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -8,6 +11,7 @@ using static UnityEditor.Progress;
 public class LevelEditorWindow : EditorWindow
 {
     private int curLevel = 0;
+    private int levelId = 0;
     private int selectedIndex;
     private string[] NumberOfPairs = { "2", "6", "10" };
     private int selectedModeLevel;
@@ -16,6 +20,9 @@ public class LevelEditorWindow : EditorWindow
     private int timeLimit;
     private int startArchived;
     private bool unlocked;
+
+    private bool isFirstTimeShowWindow = true;
+    private List<LevelObjectData> listLevel;
     /* advanced feature
     private string[] ChoiceOfHelps = {"","",""};
     private string subject;
@@ -33,8 +40,12 @@ public class LevelEditorWindow : EditorWindow
     {
         GUILayout.Label("Create a New Level", EditorStyles.boldLabel);
 
-        curLevel = GetCountLevelFromResource();
+        GetCountLevelFromServer();
+        //curLevel = GetCountLevelFromResource();
+
         GUILayout.Label($"Current Level: {curLevel}");
+        GUILayout.Space(5);
+        GUILayout.Label($"ID Level: {levelId}");
 
         GUILayout.Space(15);
         selectedIndex = EditorGUILayout.Popup("Type Of NOPairs", selectedIndex, NumberOfPairs);
@@ -55,6 +66,7 @@ public class LevelEditorWindow : EditorWindow
         Debug.Log("unlocked " + unlocked);
         if (GUILayout.Button("Create Level Data"))
         {
+            /* If use ScriptableObject
             LevelScriptableData newLevel = ScriptableObject.CreateInstance<LevelScriptableData>();
             newLevel.nOPairs = Convert.ToInt32(NumberOfPairs[selectedIndex].ToString());
             newLevel.timeLimit = Convert.ToInt32(timeLimit.ToString());
@@ -63,10 +75,104 @@ public class LevelEditorWindow : EditorWindow
             newLevel.unlocked = unlocked;
 
             AssetDatabase.CreateAsset(newLevel, "Assets/Resources/Level_" + curLevel + ".asset");
+            */
+
+            LevelObjectData newLevel = new LevelObjectData(levelId,
+                Convert.ToInt32(NumberOfPairs[selectedIndex].ToString()),
+                Convert.ToInt32(timeLimit.ToString()),
+                Convert.ToInt32(startArchived.ToString()),
+                Convert.ToInt32(NumberOfModes[selectedModeLevel].ToString()),
+                unlocked);
+            listLevel.Add(newLevel);
+
             curLevel++;
+            levelId++;
+        }
+
+        if (GUILayout.Button("Upload Level Data to Server"))
+        {
+            LevelData listLevelData = new LevelData();
+            listLevelData.lastUnlockedLevel = 0;
+            listLevelData.levelScriptableDatas = listLevel;
+
+            string levelDataString = JsonConvert.SerializeObject(listLevelData, Formatting.Indented);
+            UploadLevelsDataToServer(levelDataString);
+
         }
     }
+    public void UploadLevelsDataToServer(string levelJson)
+    {
+        if (levelJson == null || levelJson == "")
+        {
+            return;
+        }
 
+        PlayFabServerAPI.SetTitleData(
+            new PlayFab.ServerModels.SetTitleDataRequest
+            {
+                Key = "Levels",
+                Value = levelJson
+            },
+            result => Debug.Log("Upload new level data successfull!"),
+            error => {
+                Debug.Log("Got error setting titleData:");
+                Debug.Log(error.GenerateErrorReport());
+            }
+        );
+    }
+    private void GetCountLevelFromServer()
+    {
+        if (!isFirstTimeShowWindow)
+            return;
+        LoginPlayfabServer();
+        PlayFabClientAPI.GetTitleData(new PlayFab.ClientModels.GetTitleDataRequest(),
+            result => {
+                if (result.Data == null || !result.Data.ContainsKey("Levels")) Debug.Log("No Levels");
+                else
+                {
+                    string levelDataJson = result.Data["Levels"];
+                    // Parse JSON thành object
+                    LevelData levelData = JsonConvert.DeserializeObject<LevelData>(levelDataJson);
+
+                    levelId = levelData.levelScriptableDatas.Count;
+                    curLevel = levelData.levelScriptableDatas.Count + 1;
+
+                    listLevel = levelData.levelScriptableDatas;
+
+                    Debug.Log("Loaded level successfull! NoLevels: " + levelData.levelScriptableDatas.Count);
+                }
+            },
+            error => {
+                Debug.Log("Got error getting titleData:");
+                Debug.Log(error.GenerateErrorReport());
+            }
+        );
+        isFirstTimeShowWindow = false;
+    }
+    private void LoginPlayfabServer()
+    {
+        var request = new LoginWithCustomIDRequest
+        {
+            CustomId = SystemInfo.deviceUniqueIdentifier,
+            CreateAccount = true
+        };
+        PlayFabClientAPI.LoginWithCustomID(request,
+            result => {
+                Debug.Log("Successfull login/ account create!");
+            },
+            error =>
+            {
+                Debug.Log("Error while login in/ creating account!");
+                Debug.Log(error.GenerateErrorReport());
+            });
+    }
+    private void OnDestroy()
+    {
+        Debug.Log("Editor window is closing!");
+        isFirstTimeShowWindow = true;
+    }
+
+    // If use ScriptableObject
     private int GetCountLevelFromResource()
     {
         LevelScriptableData[] listLevel = Resources.LoadAll<LevelScriptableData>("");
@@ -92,10 +198,5 @@ public class LevelEditorWindow : EditorWindow
         }
         curLevel++;
         return curLevel;
-    }
-
-    private void CreateLevel()
-    {
-        
     }
 }

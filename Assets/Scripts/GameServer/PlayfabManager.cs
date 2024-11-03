@@ -5,12 +5,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 using UnityEngine.UI;
+using System.Linq;
+using System.Threading;
+using System;
+using System.Threading.Tasks;
 
 public class PlayfabManager : Singleton<PlayfabManager>
 {
     [SerializeField] private GameObject loadingScreen;
+    [SerializeField] private GameObject updateDialog;
     [SerializeField] private Image progressBar;
     [SerializeField] private Text loadingText;
+    [SerializeField] private Button updateBtn;
+    [SerializeField] private Button cancelBtn;
+
 
     public override void Awake()
     {
@@ -20,49 +28,82 @@ public class PlayfabManager : Singleton<PlayfabManager>
     public override void Start()
     {
         base.Start();
-        LoginAndCheckUpdateData();
+        if (IsConnectedToInternet())
+            LoginAndCheckUpdateData();
+        else
+            LoadDataFromJsonLocal();
     }
+    public bool IsConnectedToInternet()
+    {
+        return Application.internetReachability != NetworkReachability.NotReachable;
+    }
+
+    private void LoginAndCheckUpdateData()
+    {
+        var request = new LoginWithCustomIDRequest
+        {
+            CustomId = SystemInfo.deviceUniqueIdentifier,
+            CreateAccount = true
+        };
+        PlayFabClientAPI.LoginWithCustomID(request,
+            result => {
+                Debug.Log("Successfull login/ account create!");
+                CheckNetworkAndUpdateLevelsData();
+            },
+            error =>
+            {
+                Debug.Log("Error while login in/ creating account!");
+                Debug.Log(error.GenerateErrorReport());
+            });
+    }
+
     private void CheckNetworkAndUpdateLevelsData()
     {
-        if (PlayFabClientAPI.IsClientLoggedIn())
-        {
-            PlayFabClientAPI.GetTitleData(new GetTitleDataRequest(),
-            result => {
-                if (result.Data == null || !result.Data.ContainsKey("LevelVersion")) Debug.Log("No Exist Version of Level Data");
-                else
+        PlayFabClientAPI.GetTitleData(new GetTitleDataRequest(),
+        result => {
+            if (result.Data == null || !result.Data.ContainsKey("LevelVersion")) Debug.Log("No Exist Version of Level Data");
+            else
+            {
+                if (result.Data.TryGetValue("LevelVersion", out string versionStr))
                 {
-                    if (result.Data.TryGetValue("LevelVersion", out string versionStr))
-                    {
-                        int serverLevelVersion = int.Parse(versionStr);
+                    int serverLevelVersion = int.Parse(versionStr);
 
-                        if (serverLevelVersion > Pref.levelVersion)
+                    if (serverLevelVersion > Pref.levelVersion)
+                    {
+                        if (updateBtn == null || cancelBtn == null || updateDialog == null)
+                            return;
+                        updateDialog.SetActive(true);
+                        updateBtn.onClick.RemoveAllListeners();
+                        updateBtn.onClick.AddListener(() =>
                         {
+                            updateDialog.SetActive(false);
                             Debug.Log("There is a new version, please update!");
                             Pref.levelVersion = serverLevelVersion;
                             // Active screen update...
                             StartCoroutine(LoadDataCoroutineAndUpdateDataToJsonLocal());
-                        }
-                        else
-                        {
-                            Debug.Log("There is no new version!");
-                            // Load Data From Local
-                            //LoadLocalLevelData();
-                            return;
-                        }
+                        });
+                        cancelBtn.onClick.RemoveAllListeners();
+                        cancelBtn.onClick.AddListener(() => {
+                            updateDialog.SetActive(false);
+                            LoadDataFromJsonLocal();
+                            });
+                    }
+                    else
+                    {
+                        Debug.Log("There is no new version!");
+                        // Load Data From Local
+                        LoadDataFromJsonLocal();
+                        return;
                     }
                 }
-            },
-            error => {
-                Debug.Log("Got error getting titleData:");
-                Debug.Log(error.GenerateErrorReport());
             }
-        );}
-        else
-        {
-            Debug.Log("Login failed!");
-            return;
-        }
+        },
+        error => {
+            Debug.Log("Got error getting titleData:");
+            Debug.Log(error.GenerateErrorReport());
+        });
     }
+    
     private IEnumerator LoadDataCoroutineAndUpdateDataToJsonLocal()
     {
         if(loadingScreen == null && progressBar == null)
@@ -84,7 +125,10 @@ public class PlayfabManager : Singleton<PlayfabManager>
                     string levelDataJson = result.Data["Levels"];
                     // Parse JSON thành object
                     LevelData levelData = JsonConvert.DeserializeObject<LevelData>(levelDataJson);
-                    UpdateLevelsDataToJsonFile(levelDataJson);
+
+                    UpdateLevelsDataToJsonFile(levelData);
+
+                    LoadDataFromJsonLocal();
                     Debug.Log("Loaded level successfull! NoLevels: " + levelData.levelScriptableDatas.Count);
                     isDataLoaded = true;
                 }
@@ -107,75 +151,45 @@ public class PlayfabManager : Singleton<PlayfabManager>
         }
 
         progressBar.fillAmount = 1;
-        loadingText.text = "Loading... 100%";
+        loadingText.text = "Update Successfull!";
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(2.5f);
         loadingScreen.SetActive(false);
     }
-    public void UpdateLevelsToScritableobject(List<LevelScriptableData> levelList)
+
+    private void LoadDataFromJsonLocal()
     {
+        if (AddressableManager.Ins)
+            StartCoroutine(AddressableManager.Ins.LoadSprites("subject1"));
 
-        LevelScriptableData[] allLevels = Resources.LoadAll<LevelScriptableData>("");
-
-        foreach (LevelScriptableData levelData in levelList)
-        {
-            // Tìm ScriptableObject tương ứng với levelID
-            LevelScriptableData so = FindLevelSOByName(allLevels, levelData.name.ToString());
-            if (so != null)
-            {
-                // Add method Update Data In LevelScriptableData script
-                so.UpdateData(levelData);  // Cập nhật dữ liệu
-                Debug.Log($"Level {so.name} đã được cập nhật.");
-            }
-            else
-            {
-                Debug.LogWarning($"Không tìm thấy ScriptableObject cho levelID: {levelData.name}");
-                // Create Instance For New Scritableobject
-            }
-        }
-       
+        if (LevelSystemManager.Ins)
+            LevelSystemManager.Ins.InitData();
     }
 
-    private LevelScriptableData FindLevelSOByName(LevelScriptableData[] allLevels, string levelName)
+    public void UpdateLevelsDataToJsonFile(LevelData levelDataFromServer)
     {
-        foreach (LevelScriptableData level in allLevels)
-        {
-            if (level.name == levelName)
-                return level;
-        }
-        return null;
-    }
-    private void LoginAndCheckUpdateData()
-    {
-        var request = new LoginWithCustomIDRequest
-        {
-            CustomId = SystemInfo.deviceUniqueIdentifier,
-            CreateAccount = true
-        };
-        PlayFabClientAPI.LoginWithCustomID(request,
-            result => {
-                Debug.Log("Successfull login/ account create!");
-                CheckNetworkAndUpdateLevelsData();
-            },
-            error =>
-            {
-                Debug.Log("Error while login in/ creating account!");
-                Debug.Log(error.GenerateErrorReport());
-            });
-    }
-
-    public void UpdateLevelsDataToJsonFile(string levelDataString)
-    {
-        if(string.IsNullOrEmpty(levelDataString))
+        if (levelDataFromServer == null || levelDataFromServer.levelScriptableDatas == null || levelDataFromServer.levelScriptableDatas.Count == 0)
         {
             Debug.Log("Level Data load from Server is Null or Empty!");
             return;
         }
+        List<LevelObjectData> listLevelFromLocal = SaveLoadData.Ins.LoadListLevelsDataFromLocal();
 
+        foreach (LevelObjectData level in listLevelFromLocal)
+        {
+            LevelObjectData levelTemp = levelDataFromServer.levelScriptableDatas.Find(item => item.levelId == level.levelId && level.unlocked == true);
+            if (levelTemp != null)
+            {
+                levelTemp.unlocked = level.unlocked;
+                levelTemp.startArchived = level.startArchived;
+            }
+        }
+
+        string levelDataString = JsonConvert.SerializeObject(levelDataFromServer, Formatting.Indented);
         try
         {
             System.IO.File.WriteAllText(Application.persistentDataPath + "/LevelData.json", levelDataString);
-            Debug.Log("<color=green>[Level Data] Saved.</color>");
+            Debug.Log("<color=green>New Version of [Level Data] is Updated.</color>");
         }
         catch (System.Exception e)
         {
@@ -204,4 +218,39 @@ public class PlayfabManager : Singleton<PlayfabManager>
             }
         );
     }
+
+
+    /* if use ScriptableObject
+    public void UpdateLevelsToScritableobject(List<LevelScriptableData> levelList)
+    {
+        LevelScriptableData[] allLevels = Resources.LoadAll<LevelScriptableData>("");
+
+        foreach (LevelScriptableData levelData in levelList)
+        {
+            // Tìm ScriptableObject tương ứng với levelID
+            LevelScriptableData so = FindLevelSOByName(allLevels, levelData.name.ToString());
+            if (so != null)
+            {
+                // Add method Update Data In LevelScriptableData script
+                //so.UpdateData(levelData);  // Cập nhật dữ liệu
+                Debug.Log($"Level {so.name} đã được cập nhật.");
+            }
+            else
+            {
+                Debug.LogWarning($"Không tìm thấy ScriptableObject cho levelID: {levelData.name}");
+                // Create Instance For New Scritableobject
+            }
+        }
+    }
+
+    private LevelScriptableData FindLevelSOByName(LevelScriptableData[] allLevels, string levelName)
+    {
+        foreach (LevelScriptableData level in allLevels)
+        {
+            if (level.name == levelName)
+                return level;
+        }
+        return null;
+    }
+     */
 }

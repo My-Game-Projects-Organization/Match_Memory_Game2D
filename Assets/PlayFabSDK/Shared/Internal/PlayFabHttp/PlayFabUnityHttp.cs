@@ -134,7 +134,7 @@ namespace PlayFab.Internal
             var startTime = DateTime.UtcNow;
 #endif
 
-            using var www = new UnityWebRequest(reqContainer.FullUrl)
+            var www = new UnityWebRequest(reqContainer.FullUrl)
             {
                 uploadHandler = new UploadHandlerRaw(reqContainer.Payload),
                 method = "POST"
@@ -158,9 +158,11 @@ namespace PlayFab.Internal
                 else
                     Debug.LogWarning("Null header: " + headerPair.Key + " = " + headerPair.Value);
             }
-
+            // Use a try-finally to ensure disposal
+            try
+            {
 #if UNITY_2017_2_OR_NEWER
-            yield return www.SendWebRequest();
+                yield return www.SendWebRequest();
 #else
             yield return www.Send();
 #endif
@@ -176,24 +178,33 @@ namespace PlayFab.Internal
             PlayFabHttp.SendRequestTiming(timing);
 #endif
 
-            if (!string.IsNullOrEmpty(www.error))
-            {
-                OnError(www.error, reqContainer);
-            }
-            else
-            {
-                try
+                if (!string.IsNullOrEmpty(www.error))
                 {
-                    byte[] responseBytes = www.downloadHandler.data;
-                    string responseText = System.Text.Encoding.UTF8.GetString(responseBytes, 0, responseBytes.Length);
-                    OnResponse(responseText, reqContainer);
+                    OnError(www.error, reqContainer);
                 }
-                catch (Exception e)
+                else
                 {
-                    OnError("Unhandled error in PlayFabUnityHttp: " + e, reqContainer);
+                    try
+                    {
+                        byte[] responseBytes = www.downloadHandler.data;
+                        string responseText = System.Text.Encoding.UTF8.GetString(responseBytes, 0, responseBytes.Length);
+                        OnResponse(responseText, reqContainer);
+                    }
+                    catch (Exception e)
+                    {
+                        OnError("Unhandled error in PlayFabUnityHttp: " + e, reqContainer);
+                    }
                 }
             }
-            www.Dispose();
+            finally
+            {
+                // Ensure disposal of the www object
+                if (www != null)
+                {
+                    www.Dispose();
+                    Debug.Log("Disposed UnityWebRequest!");
+                }
+            }
         }
 
         public int GetPendingMessages()

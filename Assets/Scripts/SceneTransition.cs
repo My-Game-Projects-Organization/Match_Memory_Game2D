@@ -6,11 +6,10 @@ using System.Collections;
 public class SceneTransition : MonoBehaviour
 {
     public Image fadeImage;  // Image dùng để làm hiệu ứng
-    public float fadeDuration = 2.0f;
+    public float fadeDuration = 4.0f;
 
-    void Start()
+    private void Awake()
     {
-        // Bắt đầu bằng việc Fade In
         StartCoroutine(FadeIn());
     }
 

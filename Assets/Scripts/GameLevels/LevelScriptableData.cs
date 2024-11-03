@@ -16,7 +16,7 @@ public class LevelScriptableData : ScriptableObject
     public string subject;
     */
 
-    public void UpdateData(LevelScriptableData newData)
+    public void UpdateData(LevelObjectData newData)
     {
         nOPairs = newData.nOPairs;
         timeLimit = newData.timeLimit;

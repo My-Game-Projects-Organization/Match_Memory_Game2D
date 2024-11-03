@@ -28,7 +28,7 @@ public class AddressableManager : Singleton<AddressableManager>
                     foreach (var sprite in op.Result)
                     {
                         loadedSprites.Add(sprite);
-                        Debug.Log($"Loaded sprite: {sprite.name}");
+                        //Debug.Log($"Loaded sprite: {sprite.name}");
                     }
                     loadedAssets[label] = op;
                     //OnSpritesLoaded?.Invoke(loadedSprites);
@@ -39,6 +39,11 @@ public class AddressableManager : Singleton<AddressableManager>
                 }
             };
         }
+    }
+    private void OnApplicationQuit()
+    {
+        ReleaseAllAssets();
+        //Addressables.ClearResourceLocators();
     }
 
     public List<Sprite> GetLoadedAsset(string label)

@@ -7,5 +7,5 @@ using UnityEngine;
 public class LevelData
 {
     public int lastUnlockedLevel = 0;
-    public List<LevelScriptableData> levelScriptableDatas;
+    public List<LevelObjectData> levelScriptableDatas;
 }
