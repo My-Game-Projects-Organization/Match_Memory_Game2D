@@ -24,7 +24,7 @@ public class GameManager : Singleton<GameManager>
     private int m_totalMoving;
     private int m_rightMoving;
     private bool m_isAnswerChecking;
-    private List<LevelScriptableData> m_listLevelScriptsData;
+    private List<LevelObjectData> m_listLevelScriptsData;
 
     [SerializeField] private AddressableManager m_spriteLoader; 
     [SerializeField] public GameObject messImg;
@@ -45,9 +45,10 @@ public class GameManager : Singleton<GameManager>
         if(AddressableManager.Ins)
             m_spriteLoader = AddressableManager.Ins;
 
-
         m_listLevelScriptsData = LevelSystemManager.Ins.LevelData.levelScriptableDatas;
+        // If list Level null ...
 
+        /* if use ScriptableObject
         if (m_listLevelScriptsData.Count <= 0 || m_listLevelScriptsData == null)
         {
             LevelScriptableData[] resourcesLevel = Resources.LoadAll<LevelScriptableData>("");
@@ -61,6 +62,8 @@ public class GameManager : Singleton<GameManager>
                 Debug.Log("No ScriptableObjects found in Resources");
             }
         }
+        */
+
         // xử lý logic load sprite từ folder
         m_matchItemsCopy = new List<MatchItem>();
 
@@ -131,8 +134,6 @@ public class GameManager : Singleton<GameManager>
     }
     private void GenerateMatchItem(List<Sprite> list_Sprites)
     {
-       
-
         if (itemUIPb == null || gridRoot == null) return;
 
         // lay chan so cap, vi du co 9 nhung phai lay chan de chia so cap
@@ -238,7 +239,6 @@ public class GameManager : Singleton<GameManager>
                 break;
         }
     }
-
     private IEnumerator CheckAnswerCo()
     {
         bool isRight = m_answers[0] != null && m_answers[1] != null

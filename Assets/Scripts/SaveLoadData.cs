@@ -8,6 +8,13 @@ using UnityEngine;
 
 public class SaveLoadData : Singleton<SaveLoadData>
 {
+    private void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.C))
+        {
+            ClearData();    
+        }
+    }
     public override void Awake()
     {
         MakeSingleton(true);
@@ -23,16 +30,7 @@ public class SaveLoadData : Singleton<SaveLoadData>
     }
     public void Initialize()
     {
-        if(Pref.isFirstTimeStartGame)
-        {
-            GetAllLevelDataFromResources();
-            SaveData();
-            Pref.isFirstTimeStartGame = false;
-        }
-        else
-        {
-            LoadData();
-        }
+        LoadData();
     }
     private int ExtractLevelNumber(string name)
     {
@@ -44,24 +42,33 @@ public class SaveLoadData : Singleton<SaveLoadData>
         LevelScriptableData[] levelInResources = Resources.LoadAll<LevelScriptableData>("");
         // Sort List level
         //LevelScriptableData[] levelInResourcesAfterSort = levelInResources.OrderBy(level => ExtractLevelNumber(level.name)).ToArray();
-        LevelSystemManager.Ins.InitLevelData();
-        LevelSystemManager.Ins.LevelData.levelScriptableDatas = new List<LevelScriptableData>(levelInResources);
+        //LevelSystemManager.Ins.InitLevelData();
+        //LevelSystemManager.Ins.LevelData.levelScriptableDatas = new List<LevelScriptableData>(levelInResources);
 
         Debug.Log("Number of ScriptableObjects In Resource: " + levelInResources.Length);
     }
     public void SaveData()
     {
-        string levelDataString = JsonConvert.SerializeObject(LevelSystemManager.Ins.LevelData, Formatting.Indented);
-        try
+        if(LevelSystemManager.Ins)
         {
-            System.IO.File.WriteAllText(Application.persistentDataPath + "/LevelData.json", levelDataString);
-            Debug.Log("<color=green>[Level Data] Saved.</color>");
-        }
-        catch (System.Exception e)
-        {
-            Debug.Log("Error Saving data" + e);
-            throw;
-        }
+            if (LevelSystemManager.Ins.LevelData == null ||
+                LevelSystemManager.Ins.LevelData.levelScriptableDatas == null ||
+                LevelSystemManager.Ins.LevelData.levelScriptableDatas.Count == 0)
+                return;
+
+            string levelDataString = JsonConvert.SerializeObject(LevelSystemManager.Ins.LevelData, Formatting.Indented);
+            try
+            {
+                System.IO.File.WriteAllText(Application.persistentDataPath + "/LevelData.json", levelDataString);
+                Debug.Log("<color=green>[Level Data] Saved.</color>");
+            }
+            catch (System.Exception e)
+            {
+                Debug.Log("Error Saving data" + e);
+                throw;
+            }
+        }    
+        
     }
     private void LoadData()
     {
@@ -81,13 +88,13 @@ public class SaveLoadData : Singleton<SaveLoadData>
 
                 }
                 LevelSystemManager.Ins.InitLevelData();
-                LevelSystemManager.Ins.LevelData.levelScriptableDatas = new List<LevelScriptableData>(levelData.levelScriptableDatas);
+                LevelSystemManager.Ins.LevelData.levelScriptableDatas = new List<LevelObjectData>(levelData.levelScriptableDatas);
                 LevelSystemManager.Ins.LevelData.lastUnlockedLevel = levelData.lastUnlockedLevel;
 
                 Debug.Log(LevelSystemManager.Ins.LevelData.lastUnlockedLevel + "");
             }
             Debug.Log("<color=green>[Level Data] Loaded.</color>");
-            CheckStateLevelDataFromLevelSystem();
+            //CheckStateLevelDataFromLevelSystem();
         }
         catch (MissingReferenceException e)
         {
@@ -97,13 +104,67 @@ public class SaveLoadData : Singleton<SaveLoadData>
             Debug.Log("Level is null" + e1);
         }
     }
+    public string LoadStringLevelsDataFromLocal()
+    {
+        string levelDataString = "";
+        try
+        {
+            levelDataString = System.IO.File.ReadAllText(Application.persistentDataPath + "/LevelData.json");
+            Debug.Log("Log json: " + levelDataString);
+            LevelData levelData = JsonConvert.DeserializeObject<LevelData>(levelDataString);
+            if (levelData != null)
+            {
+                Debug.Log(LevelSystemManager.Ins.LevelData.lastUnlockedLevel + "");
+            }
+            Debug.Log("<color=green>[Level Data] Loaded.</color>");
+        }
+        catch (MissingReferenceException e)
+        {
+            Debug.Log("Error Loading Data" + e);
+        }
+        catch (NullReferenceException e1)
+        {
+            Debug.Log("Level is null" + e1);
+        }
+
+        return levelDataString;
+    }
+    public List<LevelObjectData> LoadListLevelsDataFromLocal()
+    {
+        List<LevelObjectData> listLevel = new List<LevelObjectData>();
+        try
+        {
+            string levelDataString = System.IO.File.ReadAllText(Application.persistentDataPath + "/LevelData.json");
+            Debug.Log("Log json: " + levelDataString);
+            LevelData levelData = JsonConvert.DeserializeObject<LevelData>(levelDataString);
+            if (levelData != null)
+            {
+                listLevel = new List<LevelObjectData>(levelData.levelScriptableDatas);
+            }
+            Debug.Log("<color=green>[Level Data] Loaded.</color>");
+        }
+        catch (MissingReferenceException e)
+        {
+            Debug.Log("Error Loading Data" + e);
+        }
+        catch (NullReferenceException e1)
+        {
+            Debug.Log("Level is null" + e1);
+        }
+
+        return listLevel;
+    }
     public void ClearData()
     {
         Debug.Log("Data Cleared");
-        GetAllLevelDataFromResources();
         LevelSystemManager.Ins.LevelData.lastUnlockedLevel = 0;
-        for (int i = 1; i < LevelSystemManager.Ins.LevelData.levelScriptableDatas.Count; i++)
+        for (int i = 0; i < LevelSystemManager.Ins.LevelData.levelScriptableDatas.Count; i++)
         {
+            if (i == 0)
+            {
+                LevelSystemManager.Ins.LevelData.levelScriptableDatas[i].startArchived = 0;
+                continue;
+            }
             LevelSystemManager.Ins.LevelData.levelScriptableDatas[i].unlocked = false;
         }
         SaveData();
@@ -112,17 +173,18 @@ public class SaveLoadData : Singleton<SaveLoadData>
         Pref.nOExtraTimeHelp = 3;
         Pref.startcoins = 0;
         Pref.isFirstTimeStartGame = true;
+        Pref.levelVersion = 0;
     }
     void CheckStateLevelDataFromLevelSystem()
     {
-        List<LevelScriptableData> list = LevelSystemManager.Ins.LevelData.levelScriptableDatas;
+        List<LevelObjectData> list = LevelSystemManager.Ins.LevelData.levelScriptableDatas;
         if (list != null && list.Count > 0)
         {
             int count = 0;
-            foreach (LevelScriptableData resource in list)
+            foreach (LevelObjectData resource in list)
             {
                 // Check the type if necessary
-                if (resource is LevelScriptableData)
+                if (resource is LevelObjectData)
                 {
                     count++;
                     Debug.Log(count + " - " + resource.unlocked);

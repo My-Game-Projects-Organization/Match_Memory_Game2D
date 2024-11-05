@@ -15,4 +15,11 @@ public class LevelScriptableData : ScriptableObject
     public int itemSize;
     public string subject;
     */
+
+    public void UpdateData(LevelObjectData newData)
+    {
+        nOPairs = newData.nOPairs;
+        timeLimit = newData.timeLimit;
+        unlocked = newData.unlocked;
+    }
 }

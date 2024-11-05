@@ -12,7 +12,7 @@ public class LevelButtonScript : BaseButton
 
     private int levelIndex;
 
-    public void SetLevelButton(LevelScriptableData value, int indexLevel)
+    public void SetLevelButton(LevelObjectData value, int indexLevel)
     {
         bool activeLevel = value.unlocked;
         if (value.unlocked)

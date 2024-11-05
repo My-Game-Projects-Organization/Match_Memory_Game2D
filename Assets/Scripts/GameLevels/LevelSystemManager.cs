@@ -15,16 +15,6 @@ public class LevelSystemManager : Singleton<LevelSystemManager>
         MakeSingleton(true);
     }
 
-    private new void Start()
-    {
-        List<LevelScriptableData> listLevel = LevelData.levelScriptableDatas;
-        if(listLevel == null || listLevel.Count == 0 )
-        {
-            // call load level method from source of saveloaddata script
-            SaveLoadData.Ins.GetAllLevelDataFromResources();
-            Debug.Log("Load level error");
-        }
-    }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -36,17 +26,15 @@ public class LevelSystemManager : Singleton<LevelSystemManager>
             SaveLoadData.Ins.ClearData();
         }
     }
-
-    private void OnEnable()
+    public void InitData()
     {
-        // call check state game method
         SaveLoadData.Ins.Initialize();
     }
     public void InitLevelData()
     {
         levelData = new LevelData();
         levelData.lastUnlockedLevel = 0;
-        levelData.levelScriptableDatas = new List<LevelScriptableData>();
+        levelData.levelScriptableDatas = new List<LevelObjectData>();
     }
 
     public void LevelComplete(int curLevel, int star)
