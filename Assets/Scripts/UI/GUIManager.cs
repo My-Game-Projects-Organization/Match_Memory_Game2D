@@ -25,22 +25,19 @@ public class GUIManager : Singleton<GUIManager>
         btnStart.onClick.RemoveAllListeners();
         btnStart.onClick.AddListener(() =>
         {
-            if (AddressableManager.Ins)
-                StartCoroutine(AddressableManager.Ins.LoadSprites("subject1"));
-                
             ShowLevelMenu(true);
             if (AudioController.Ins)
             {
                 AudioController.Ins.PlaySound(AudioController.Ins.btnClick);
             }
-        });
 
-        InitializeUILevel();
+            InitializeUILevel();
+        });
     }
 
     private void InitializeUILevel()
     {
-        List<LevelScriptableData> levelScriptableDatas = LevelSystemManager.Ins.LevelData.levelScriptableDatas;
+        List<LevelObjectData> levelScriptableDatas = LevelSystemManager.Ins.LevelData.levelScriptableDatas;
         for (int i = 0; i < levelScriptableDatas.Count; i++)
         {
             LevelButtonScript levelBtn = Instantiate(levelBtnPrefab, leveBtnGridHolder.transform);
