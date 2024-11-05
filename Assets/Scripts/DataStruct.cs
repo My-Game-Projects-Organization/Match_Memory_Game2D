@@ -33,5 +33,7 @@ public enum PrefKey
     NOHintHelp,
     BestScore,
     StartCoins,
-    IsFirstTimeStartGame
+    IsFirstTimeStartGame,
+    RewardIndex,
+    LastClaimDate
 }

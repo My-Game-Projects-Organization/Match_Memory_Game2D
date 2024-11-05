@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -67,5 +68,21 @@ public static class Pref
             PlayerPrefs.SetInt(PrefKey.StartCoins.ToString(), value);
         }
         get => PlayerPrefs.GetInt(PrefKey.StartCoins.ToString(), 0);
+    }
+    public static int rewardIndex
+    {
+        set
+        {
+            PlayerPrefs.SetInt(PrefKey.RewardIndex.ToString(), value);
+        }
+        get => PlayerPrefs.GetInt(PrefKey.RewardIndex.ToString(), 0);
+    }
+    public static string lastClaimDate
+    {
+        set
+        {
+            PlayerPrefs.SetString(PrefKey.LastClaimDate.ToString(), value);
+        }
+        get => PlayerPrefs.GetString(PrefKey.LastClaimDate.ToString(),"");
     }
 }
